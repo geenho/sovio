@@ -1,26 +1,52 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useRef, useEffect} from 'react';
+import 'styles/App.css';
 
 function App() {
+
+  const [fileName, setFileName] = useState("");
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const inputElement = useRef(null);
+
+  const song = useRef(new Audio());
+  
+  useEffect(()=>{
+    if(fileName){
+      if(isPlaying){
+        song.current.play();
+      }else{
+        song.current.pause();
+      }
+    }else{
+      console.log("there's no file")
+    }
+  }, [isPlaying])
+
+  function handleAudio(URLOb){
+    song.current.src = URLOb;
+    
+    setIsPlaying(true);
+  }
+
+  function handleFile(){
+    let file = inputElement.current.files[0];
+
+    if(file.name.indexOf(".mp3") === file.name.length - 4){
+      setFileName(file.name);
+      handleAudio(URL.createObjectURL(file))
+    }
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {(fileName ? <>{fileName}</> : <>UwU</> )}
+      <br/>
+      <input type="file"name ="file" id="real-input" ref={inputElement} onChange={handleFile}/>
+      <br/>
+      <button onClick={() => {setIsPlaying(!isPlaying)}} type="button">{(isPlaying) ? <>||</> : <>></>}</button>
     </div>
   );
+
 }
 
 export default App;
